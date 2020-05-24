@@ -1,7 +1,9 @@
 /*  
  *  MANUAL STEPPER
  *  
- *  OBS: Detach LEDs into pins 0(RX) and 1(TX) if using Serial to debug and uncomment all lines containing Serial commands.
+ *  OBS: - Do not plug the Arduino via Serial, remove pins 0, 1 and comment every line related these pins (AKA LED_X and LED_Y lines) if you do so.
+ *       - Unplug pins 0 and 1 everytime you upload the code.
+ *       - ALWAYS USE AN EXTERNAL POWER SOURCE.
  *  
  *  Author: Gustavo G. Pires
  *  GitHub: GuhPires
@@ -11,6 +13,8 @@
 
 #define AXIS_BTN 6    // Button to change the selected axis
 #define MANUAL_BTN 12 // Button to turn ON/OFF manual mode
+#define LED_X 0       // LED indicating that y axis is selected
+#define LED_Y 1       // LED indicating that y axis is selected
 #define LED 13        // LED indicating manual mode
 #define POT A0        // Potentiometer to control rotations
 #define SPR 2048      // Steps per Revolution (28BYJ-48)
@@ -38,10 +42,12 @@ int lstPotVal = 0;
 void setup() {
   pinMode(AXIS_BTN, INPUT);
   pinMode(MANUAL_BTN, INPUT);
+  pinMode(LED_X, OUTPUT);
+  pinMode(LED_Y, OUTPUT);
   pinMode(LED, OUTPUT);
   yAxisStepper.setSpeed(RPM);
   xAxisStepper.setSpeed(RPM);
-  Serial.begin(9600);
+//  Serial.begin(9600);
 }
 
 void loop() {
@@ -49,15 +55,22 @@ void loop() {
   digitalWrite(LED, manualState);
   if(manualState){
     selectedAxis = DRE(AXIS_BTN, currSelectedAxis, lstSelectedAxis, selectedAxis);  // Check for current selected axis
-    Serial.print("SELECTED AXIS: ");
-    Serial.println(selectedAxis);
+//    Serial.print("SELECTED AXIS: ");
+//    Serial.println(selectedAxis);
     if(selectedAxis == 0) {
+      digitalWrite(LED_X, HIGH);
+      digitalWrite(LED_Y, LOW);
       int xSteps = PotToStepConvertion(maxXSteps);
       xAxisStepper.step(-xSteps);
     } else if(selectedAxis == 1) {
+      digitalWrite(LED_X, LOW);
+      digitalWrite(LED_Y, HIGH);
       int ySteps = PotToStepConvertion(maxYSteps);
       yAxisStepper.step(ySteps);
     }
+  } else {
+    digitalWrite(LED_X, LOW);
+    digitalWrite(LED_Y, LOW);
   }
 }
 
@@ -68,7 +81,7 @@ int DRE(int button, int curr, int lst, int state) {
     if(curr == HIGH) {
       state = !state;
     }
-    delay(30);
+    delay(50);
   }
   lst = curr;
   return state;
@@ -77,16 +90,16 @@ int DRE(int button, int curr, int lst, int state) {
 // Pot rotations to Steps conversion Function
 int PotToStepConvertion(int maxSteps) {
   currPotVal = analogRead(POT);
-  Serial.print("ROTATIONS: ");
-  Serial.println(currPotVal);
+//  Serial.print("ROTATIONS: ");
+//  Serial.println(currPotVal);
   int steps = lstPotVal - currPotVal;
   if(abs(steps) >= 5) {
     steps = map(steps, 0, 1023, 0, maxSteps); 
   } else {
     steps = 0;
   }
-  Serial.print("STEPS: ");
-  Serial.println(steps);
+//  Serial.print("STEPS: ");
+//  Serial.println(steps);
   lstPotVal = currPotVal;
   return steps;
 }
