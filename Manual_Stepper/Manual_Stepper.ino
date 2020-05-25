@@ -25,8 +25,8 @@ Stepper yAxisStepper = Stepper(SPR, 8, 10, 9, 11);  // Initializing Y Axis Stepp
 //                           Steps-IN1-IN3-IN2-IN4
 Stepper xAxisStepper = Stepper(SPR, 2, 4, 3, 5);    // Initializing X Axis Stepper
 
-const int maxYSteps = SPR * 2;  // Max steps into Y Axis
-const int maxXSteps = SPR * 7;  // Max steps into X Axis
+const int maxYSteps = SPR * 1.2;    // Max steps into Y Axis
+const int maxXSteps = SPR * 3.2;  // Max steps into X Axis
 
 int currManualState = 0;
 int lstManualState = 0;
@@ -42,12 +42,12 @@ int lstPotVal = 0;
 void setup() {
   pinMode(AXIS_BTN, INPUT);
   pinMode(MANUAL_BTN, INPUT);
-  pinMode(LED_X, OUTPUT);
-  pinMode(LED_Y, OUTPUT);
+//  pinMode(LED_X, OUTPUT);
+//  pinMode(LED_Y, OUTPUT);
   pinMode(LED, OUTPUT);
   yAxisStepper.setSpeed(RPM);
   xAxisStepper.setSpeed(RPM);
-//  Serial.begin(9600);
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -55,22 +55,22 @@ void loop() {
   digitalWrite(LED, manualState);
   if(manualState){
     selectedAxis = DRE(AXIS_BTN, currSelectedAxis, lstSelectedAxis, selectedAxis);  // Check for current selected axis
-//    Serial.print("SELECTED AXIS: ");
-//    Serial.println(selectedAxis);
+    Serial.print("SELECTED AXIS: ");
+    Serial.println(selectedAxis);
     if(selectedAxis == 0) {
-      digitalWrite(LED_X, HIGH);
-      digitalWrite(LED_Y, LOW);
+//      digitalWrite(LED_X, HIGH);
+//      digitalWrite(LED_Y, LOW);
       int xSteps = PotToStepConvertion(maxXSteps);
-      xAxisStepper.step(-xSteps);
+      xAxisStepper.step(xSteps);
     } else if(selectedAxis == 1) {
-      digitalWrite(LED_X, LOW);
-      digitalWrite(LED_Y, HIGH);
+//      digitalWrite(LED_X, LOW);
+//      digitalWrite(LED_Y, HIGH);
       int ySteps = PotToStepConvertion(maxYSteps);
-      yAxisStepper.step(ySteps);
+      yAxisStepper.step(-ySteps);
     }
   } else {
-    digitalWrite(LED_X, LOW);
-    digitalWrite(LED_Y, LOW);
+//    digitalWrite(LED_X, LOW);
+//    digitalWrite(LED_Y, LOW);
   }
 }
 
@@ -81,7 +81,7 @@ int DRE(int button, int curr, int lst, int state) {
     if(curr == HIGH) {
       state = !state;
     }
-    delay(50);
+    delay(100);
   }
   lst = curr;
   return state;
@@ -92,7 +92,7 @@ int PotToStepConvertion(int maxSteps) {
   currPotVal = analogRead(POT);
 //  Serial.print("ROTATIONS: ");
 //  Serial.println(currPotVal);
-  int steps = lstPotVal - currPotVal;
+  int steps = currPotVal - lstPotVal;
   if(abs(steps) >= 5) {
     steps = map(steps, 0, 1023, 0, maxSteps); 
   } else {
@@ -101,6 +101,7 @@ int PotToStepConvertion(int maxSteps) {
 //  Serial.print("STEPS: ");
 //  Serial.println(steps);
   lstPotVal = currPotVal;
+  delay(50);
   return steps;
 }
  
