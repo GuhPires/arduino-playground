@@ -28,7 +28,9 @@ void setup() {
   yAxisStepper.setSpeed(RPM);
   Serial.begin(9600);
   delay(2000);
-//  fullLap();
+  Serial.println("==== CHOOSE A MODE ====");
+  Serial.println("0 -> SERIAL CONTROL");
+  Serial.println("1 -> COLOR CONTROL");
 }
 
 void loop() {
@@ -36,10 +38,16 @@ void loop() {
   int xCoord = 0;
   int yCoord = 0;
   if(Serial.available() > 0) {
-    int numVal = Serial.parseInt();
-    int num = constrain(numVal, 0, 6);
-    Serial.print("NUM: ");
-    Serial.println(num);
+    int num = 0;
+    int mode = Serial.parseInt();
+    if(mode == 0) {
+//    int numVal = Serial.parseInt();
+//    num = constrain(numVal, 0, 6);
+//    Serial.print("NUM: ");
+//    Serial.println(num);
+    } else if(mode == 1) {
+      num = avgColorReading();
+    }
     if(num > 0) {
       slot = num;
     }
@@ -80,34 +88,57 @@ void loop() {
   }
 }
 
-void readColor() {
+int readColor() {
   int colorVal = analogRead(LDR);
-  Serial.print("VALUE: ");
-  Serial.println(colorVal);
+//  Serial.print("VALUE: ");
+//  Serial.println(colorVal);
+  int color = 0;
   switch(colorVal) {
-    case 85 ... 92:
+    case 118 ... 122:
       Serial.println("WHITE");
+      color = 1;
     break;
-    case 44 ... 50:
+    case 65 ... 75:
       Serial.println("RED");
+      color = 2;
       break;
+     case 99 ... 110:
+      Serial.println("YELLOW");
+      color = 3;
+    break;
+    case 82 ... 98:
+      Serial.println("ORANGE");
+      color = 4;
+    break;
+    case 43 ... 46:
+      Serial.println("GREEN");
+      color = 5;
+    break;
     case 36 ... 42:
       Serial.println("BLUE");
-    break;
-    case 96 ... 108:
-      Serial.println("ORANGE");
-    break;
-    case 54 ... 58:
-      Serial.println("GREEN");
-    break;
-    case 93 ... 95:
-      Serial.println("YELLOW");
+      color = 6;
     break;
     default:
       Serial.println("NONE");
     break;
   }
-  delay(1000);
+  delay(200);
+  return color;
+}
+
+int avgColorReading() {
+  int colorAvg = 0;
+  Serial.println("READING COLOR, PLEASE WAIT...");
+  for(int i = 0; i < 20; i++) {
+    Serial.print("Reading #");
+    Serial.println(i + 1);
+    colorAvg += readColor();
+  }
+  colorAvg = colorAvg / 20;
+  Serial.println("DONE!");
+  Serial.print("COLOR NUM: ");
+  Serial.println(colorAvg);
+  return colorAvg;
 }
 
 int rotationsToSlot(char axis, int coord, int startRotations) {
