@@ -1,3 +1,12 @@
+/*  
+ *  AUTO STEPPER
+ *  
+ *  OBS: - ALWAYS USE AN EXTERNAL POWER SOURCE.
+ *  
+ *  Author: Gustavo G. Pires
+ *  GitHub: GuhPires
+*/
+
 #include <Stepper.h>
 #include <Servo.h>
 
@@ -28,23 +37,32 @@ void setup() {
   yAxisStepper.setSpeed(RPM);
   Serial.begin(9600);
   delay(2000);
-  Serial.println("==== CHOOSE A MODE ====");
-  Serial.println("0 -> SERIAL CONTROL");
-  Serial.println("1 -> COLOR CONTROL");
+  // CALIBRATION:
+//  while(true){
+//    readColor();
+//  }
+  // END CALIBRATION
 }
 
 void loop() {
   int slot = 0;
   int xCoord = 0;
   int yCoord = 0;
+  Serial.println("==== CHOOSE A MODE ====");
+  Serial.println("0 -> SERIAL CONTROL");
+  Serial.println("1 -> COLOR CONTROL");
+  while(Serial.available() == 0);
   if(Serial.available() > 0) {
     int num = 0;
     int mode = Serial.parseInt();
     if(mode == 0) {
-//    int numVal = Serial.parseInt();
-//    num = constrain(numVal, 0, 6);
-//    Serial.print("NUM: ");
-//    Serial.println(num);
+//      Serial.println("CHOOSE A NUMBER BETWEEN 1 AND 6:");
+//      Reading:
+//      int numVal = Serial.parseInt();
+//      num = constrain(numVal, 0, 6);
+//      while(num == 0) { goto Reading; }
+//      Serial.print("NUM: ");
+//      Serial.println(num);
     } else if(mode == 1) {
       num = avgColorReading();
     }
@@ -88,13 +106,17 @@ void loop() {
   }
 }
 
+int serialMode() {
+  
+}
+
 int readColor() {
   int colorVal = analogRead(LDR);
-//  Serial.print("VALUE: ");
-//  Serial.println(colorVal);
+  Serial.print("VALUE: ");
+  Serial.println(colorVal);
   int color = 0;
   switch(colorVal) {
-    case 118 ... 122:
+    case 126 ... 134:
       Serial.println("WHITE");
       color = 1;
     break;
@@ -110,7 +132,7 @@ int readColor() {
       Serial.println("ORANGE");
       color = 4;
     break;
-    case 43 ... 46:
+    case 44 ... 50:
       Serial.println("GREEN");
       color = 5;
     break;
