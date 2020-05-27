@@ -26,7 +26,7 @@ Stepper yAxisStepper = Stepper(SPR, 8, 10, 9, 11);  // Initializing Y Axis Stepp
 Stepper xAxisStepper = Stepper(SPR, 2, 4, 3, 5);    // Initializing X Axis Stepper
 
 const int maxYSteps = SPR * 1.2;    // Max steps into Y Axis
-const int maxXSteps = SPR * 3.2;  // Max steps into X Axis
+const int maxXSteps = SPR * 3.2;    // Max steps into X Axis
 
 int currManualState = 0;
 int lstManualState = 0;
@@ -42,12 +42,12 @@ int lstPotVal = 0;
 void setup() {
   pinMode(AXIS_BTN, INPUT);
   pinMode(MANUAL_BTN, INPUT);
-//  pinMode(LED_X, OUTPUT);
-//  pinMode(LED_Y, OUTPUT);
+  pinMode(LED_X, OUTPUT);
+  pinMode(LED_Y, OUTPUT);
   pinMode(LED, OUTPUT);
   yAxisStepper.setSpeed(RPM);
   xAxisStepper.setSpeed(RPM);
-  Serial.begin(9600);
+//  Serial.begin(9600);
 }
 
 void loop() {
@@ -55,22 +55,22 @@ void loop() {
   digitalWrite(LED, manualState);
   if(manualState){
     selectedAxis = DRE(AXIS_BTN, currSelectedAxis, lstSelectedAxis, selectedAxis);  // Check for current selected axis
-    Serial.print("SELECTED AXIS: ");
-    Serial.println(selectedAxis);
+//    Serial.print("SELECTED AXIS: ");
+//    Serial.println(selectedAxis);
     if(selectedAxis == 0) {
-//      digitalWrite(LED_X, HIGH);
-//      digitalWrite(LED_Y, LOW);
+      digitalWrite(LED_X, HIGH);
+      digitalWrite(LED_Y, LOW);
       int xSteps = PotToStepConvertion(maxXSteps);
       xAxisStepper.step(xSteps);
     } else if(selectedAxis == 1) {
-//      digitalWrite(LED_X, LOW);
-//      digitalWrite(LED_Y, HIGH);
+      digitalWrite(LED_X, LOW);
+      digitalWrite(LED_Y, HIGH);
       int ySteps = PotToStepConvertion(maxYSteps);
       yAxisStepper.step(-ySteps);
     }
   } else {
-//    digitalWrite(LED_X, LOW);
-//    digitalWrite(LED_Y, LOW);
+    digitalWrite(LED_X, LOW);
+    digitalWrite(LED_Y, LOW);
   }
 }
 
