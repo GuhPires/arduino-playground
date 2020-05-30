@@ -74,40 +74,36 @@ void loop() {
     for(int i = 0; i < 2; i++) {
 //    Serial.print("Y: ");
 //    Serial.println(i + 1);
-    for(int j = 0; j < 3; j++) {
-//      Serial.print("X: ");
-//      Serial.println(j + 1);
-//      Serial.println(colors[i][j]);
-      if(colors[i][j] == slot) {
-        xCoord = j + 1;
-        yCoord = i + 1;
-        goto calculateAxisRotations;
+      for(int j = 0; j < 3; j++) {
+//        Serial.print("X: ");
+//        Serial.println(j + 1);
+//        Serial.println(colors[i][j]);
+        if(colors[i][j] == slot) {
+          xCoord = j + 1;
+          yCoord = i + 1;
+          goto calculateAxisRotations;
+        }
       }
     }
+    calculateAxisRotations:
+    Serial.print("X COORD: ");
+    Serial.println(xCoord);
+    Serial.print("Y COORD: ");
+    Serial.println(yCoord);
+    int xRotations = rotationsToSlot('X', xCoord, initRotationsX);
+    int yRotations = rotationsToSlot('Y', yCoord, initRotationsY);
+    Serial.print("X ROTATIONS: ");
+    Serial.println(xRotations);
+    Serial.println("====================");
+    Serial.print("Y ROTATIONS: ");
+    Serial.println(yRotations);
+    delay(1000);
+    xAxisStepper.step(xRotations);
+    yAxisStepper.step(-yRotations);
+    drop(dropperServo);
+    yAxisStepper.step(yRotations);
+    xAxisStepper.step(-xRotations);
   }
-  calculateAxisRotations:
-  Serial.print("X COORD: ");
-  Serial.println(xCoord);
-  Serial.print("Y COORD: ");
-  Serial.println(yCoord);
-  int xRotations = rotationsToSlot('X', xCoord, initRotationsX);
-  int yRotations = rotationsToSlot('Y', yCoord, initRotationsY);
-  Serial.print("X ROTATIONS: ");
-  Serial.println(xRotations);
-  Serial.println("====================");
-  Serial.print("Y ROTATIONS: ");
-  Serial.println(yRotations);
-  delay(1000);
-  xAxisStepper.step(xRotations);
-  yAxisStepper.step(-yRotations);
-  drop(dropperServo);
-  yAxisStepper.step(yRotations);
-  xAxisStepper.step(-xRotations);
-  }
-}
-
-int serialMode() {
-  
 }
 
 int readColor() {
